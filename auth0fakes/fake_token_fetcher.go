@@ -4,7 +4,7 @@ package auth0fakes
 import (
 	"sync"
 
-	"github.com/3dsim/auth0/auth0"
+	"github.com/3dsim/auth0"
 )
 
 type FakeTokenFetcher struct {

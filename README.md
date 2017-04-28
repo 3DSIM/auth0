@@ -14,7 +14,7 @@ We use glide for dependency management.  See https://github.com/Masterminds/glid
 ## Generating Fakes
 We use https://github.com/maxbrunsfeld/counterfeiter to generate fakes (aka mocks).  To regenarate a fake after an interface change:
 * Install counterfeiter.  See their github repo for install instructions.
-* In the root of the project run `go generate ./...`
+* In the root of the project run `go generate`
 
 ## Team
 * Tim Sublette
