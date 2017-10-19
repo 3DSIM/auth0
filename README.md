@@ -1,6 +1,11 @@
 # auth0
 Library written in Go for interacting with auth0
 
+## Technical Specifications
+
+### Platforms Supported
+MacOS, Windows, and Linux
+
 ## Contributing code
 Read this article and follow the steps they outline: http://scottchacon.com/2011/08/31/github-flow.html
 
