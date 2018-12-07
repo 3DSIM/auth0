@@ -12,9 +12,9 @@ Read this article and follow the steps they outline: http://scottchacon.com/2011
 All PRs should be signed off by a member of the team before merging.
 
 ## Installing dependencies
-We use glide for dependency management.  See https://github.com/Masterminds/glide.  To install dependencies:
-* Install glide.  See their repo readme.md for instructions.
-* From the root of the project run `glide install --strip-vendor`
+We use dep for dependency management. To install dependencies:
+* Install dep (https://github.com/golang/dep)
+* run `dep ensure -v` to download dependencies
 
 ## Generating Fakes
 We use https://github.com/maxbrunsfeld/counterfeiter to generate fakes (aka mocks).  To regenarate a fake after an interface change:
