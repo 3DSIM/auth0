@@ -52,7 +52,7 @@ func (a *tokenFetcher) Token(audience string) (string, error) {
 		}
 	}
 
-	t, err := a.Token(audience)
+	t, err := a.NewToken(audience)
 	if err != nil {
 		return "", err
 	}

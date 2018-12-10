@@ -50,7 +50,7 @@ func TestConfirmsTokenNotCaching(t *testing.T) {
 	// assert
 	assert.Nil(t, err, "Expected no error")
 	assert.Equal(t, "token1", token, "Expected 1st token")
-	assert.Equal(t, "newToken", newToken, "Expected 2nd token")
+	assert.Equal(t, "token2", newToken, "Expected 2nd token")
 }
 
 func TestConfirmsTokenCaching(t *testing.T) {
