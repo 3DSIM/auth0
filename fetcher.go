@@ -5,12 +5,14 @@ package auth0
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
 	"net/http"
 )
 
 // TokenFetcher implementers can fetch an auth0 token.
 type TokenFetcher interface {
+	NewToken(audience string) (string, error)
 	Token(audience string) (string, error)
 }
 
@@ -35,9 +37,30 @@ type tokenFetcher struct {
 	grantType    string
 	tokenURL     string
 	httpClient   *http.Client
+	cachedToken  string
 }
 
+// Returns the cached token, if that has expired or does not exist it returns a new token
 func (a *tokenFetcher) Token(audience string) (string, error) {
+	if a.cachedToken != "" {
+		var p jwt.Parser
+		// Check expiration of token, this does not need to be verified because
+		// verification occurs on the server.
+		token, _, _ := p.ParseUnverified(a.cachedToken, &jwt.StandardClaims{})
+		if token != nil && token.Claims.Valid() == nil {
+			return a.cachedToken, nil
+		}
+	}
+
+	t, err := a.NewToken(audience)
+	if err != nil {
+		return "", err
+	}
+	a.cachedToken = t
+	return a.cachedToken, nil
+}
+
+func (a *tokenFetcher) NewToken(audience string) (string, error) {
 	request := &request{
 		Audience:     audience,
 		ClientID:     a.clientID,
