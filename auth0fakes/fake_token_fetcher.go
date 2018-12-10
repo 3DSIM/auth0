@@ -8,6 +8,19 @@ import (
 )
 
 type FakeTokenFetcher struct {
+	NewTokenStub        func(audience string) (string, error)
+	newTokenMutex       sync.RWMutex
+	newTokenArgsForCall []struct {
+		audience string
+	}
+	newTokenReturns struct {
+		result1 string
+		result2 error
+	}
+	newTokenReturnsOnCall map[int]struct {
+		result1 string
+		result2 error
+	}
 	TokenStub        func(audience string) (string, error)
 	tokenMutex       sync.RWMutex
 	tokenArgsForCall []struct {
@@ -21,21 +34,59 @@ type FakeTokenFetcher struct {
 		result1 string
 		result2 error
 	}
-	CachedTokenStub        func(audience string) (string, error)
-	cachedTokenMutex       sync.RWMutex
-	cachedTokenArgsForCall []struct {
-		audience string
-	}
-	cachedTokenReturns struct {
-		result1 string
-		result2 error
-	}
-	cachedTokenReturnsOnCall map[int]struct {
-		result1 string
-		result2 error
-	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeTokenFetcher) NewToken(audience string) (string, error) {
+	fake.newTokenMutex.Lock()
+	ret, specificReturn := fake.newTokenReturnsOnCall[len(fake.newTokenArgsForCall)]
+	fake.newTokenArgsForCall = append(fake.newTokenArgsForCall, struct {
+		audience string
+	}{audience})
+	fake.recordInvocation("NewToken", []interface{}{audience})
+	fake.newTokenMutex.Unlock()
+	if fake.NewTokenStub != nil {
+		return fake.NewTokenStub(audience)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.newTokenReturns.result1, fake.newTokenReturns.result2
+}
+
+func (fake *FakeTokenFetcher) NewTokenCallCount() int {
+	fake.newTokenMutex.RLock()
+	defer fake.newTokenMutex.RUnlock()
+	return len(fake.newTokenArgsForCall)
+}
+
+func (fake *FakeTokenFetcher) NewTokenArgsForCall(i int) string {
+	fake.newTokenMutex.RLock()
+	defer fake.newTokenMutex.RUnlock()
+	return fake.newTokenArgsForCall[i].audience
+}
+
+func (fake *FakeTokenFetcher) NewTokenReturns(result1 string, result2 error) {
+	fake.NewTokenStub = nil
+	fake.newTokenReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeTokenFetcher) NewTokenReturnsOnCall(i int, result1 string, result2 error) {
+	fake.NewTokenStub = nil
+	if fake.newTokenReturnsOnCall == nil {
+		fake.newTokenReturnsOnCall = make(map[int]struct {
+			result1 string
+			result2 error
+		})
+	}
+	fake.newTokenReturnsOnCall[i] = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeTokenFetcher) Token(audience string) (string, error) {
@@ -89,64 +140,13 @@ func (fake *FakeTokenFetcher) TokenReturnsOnCall(i int, result1 string, result2 
 	}{result1, result2}
 }
 
-func (fake *FakeTokenFetcher) CachedToken(audience string) (string, error) {
-	fake.cachedTokenMutex.Lock()
-	ret, specificReturn := fake.cachedTokenReturnsOnCall[len(fake.cachedTokenArgsForCall)]
-	fake.cachedTokenArgsForCall = append(fake.cachedTokenArgsForCall, struct {
-		audience string
-	}{audience})
-	fake.recordInvocation("CachedToken", []interface{}{audience})
-	fake.cachedTokenMutex.Unlock()
-	if fake.CachedTokenStub != nil {
-		return fake.CachedTokenStub(audience)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	return fake.cachedTokenReturns.result1, fake.cachedTokenReturns.result2
-}
-
-func (fake *FakeTokenFetcher) CachedTokenCallCount() int {
-	fake.cachedTokenMutex.RLock()
-	defer fake.cachedTokenMutex.RUnlock()
-	return len(fake.cachedTokenArgsForCall)
-}
-
-func (fake *FakeTokenFetcher) CachedTokenArgsForCall(i int) string {
-	fake.cachedTokenMutex.RLock()
-	defer fake.cachedTokenMutex.RUnlock()
-	return fake.cachedTokenArgsForCall[i].audience
-}
-
-func (fake *FakeTokenFetcher) CachedTokenReturns(result1 string, result2 error) {
-	fake.CachedTokenStub = nil
-	fake.cachedTokenReturns = struct {
-		result1 string
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeTokenFetcher) CachedTokenReturnsOnCall(i int, result1 string, result2 error) {
-	fake.CachedTokenStub = nil
-	if fake.cachedTokenReturnsOnCall == nil {
-		fake.cachedTokenReturnsOnCall = make(map[int]struct {
-			result1 string
-			result2 error
-		})
-	}
-	fake.cachedTokenReturnsOnCall[i] = struct {
-		result1 string
-		result2 error
-	}{result1, result2}
-}
-
 func (fake *FakeTokenFetcher) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.newTokenMutex.RLock()
+	defer fake.newTokenMutex.RUnlock()
 	fake.tokenMutex.RLock()
 	defer fake.tokenMutex.RUnlock()
-	fake.cachedTokenMutex.RLock()
-	defer fake.cachedTokenMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

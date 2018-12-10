@@ -44,13 +44,13 @@ func TestConfirmsTokenNotCaching(t *testing.T) {
 
 	// act
 	f := NewTokenFetcher(ts.Client(), ts.URL, clientID, clientSecret)
-	token, err := f.CachedToken("audience")
-	token2, err := f.Token("audience")
+	token, err := f.Token("audience")
+	newToken, err := f.NewToken("audience")
 
 	// assert
 	assert.Nil(t, err, "Expected no error")
 	assert.Equal(t, "token1", token, "Expected 1st token")
-	assert.Equal(t, "token2", token2, "Expected 1st token")
+	assert.Equal(t, "newToken", newToken, "Expected 2nd token")
 }
 
 func TestConfirmsTokenCaching(t *testing.T) {
@@ -76,10 +76,10 @@ func TestConfirmsTokenCaching(t *testing.T) {
 
 	// act
 	f := NewTokenFetcher(ts.Client(), ts.URL, clientID, clientSecret)
-	token, err := f.CachedToken("audience")
-	token2, err := f.CachedToken("audience")
+	token, err := f.Token("audience")
+	token2, err := f.Token("audience")
 	time.Sleep(3 * time.Second)
-	token3, err := f.CachedToken("audience")
+	token3, err := f.Token("audience")
 
 	// assert
 	assert.Nil(t, err, "Expected no error")
@@ -96,7 +96,7 @@ func _TestAccessTokenFromGlobalCredentials(t *testing.T) {
 
 	// act
 	f := NewTokenFetcher(http.DefaultClient, tokenURL, clientID, clientSecret)
-	accessToken, err := f.Token("")
+	accessToken, err := f.NewToken("")
 
 	// assert
 	assert.Nil(t, err, "Expected no errors")

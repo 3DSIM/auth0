@@ -12,8 +12,8 @@ import (
 
 // TokenFetcher implementers can fetch an auth0 token.
 type TokenFetcher interface {
+	NewToken(audience string) (string, error)
 	Token(audience string) (string, error)
-	CachedToken(audience string) (string, error)
 }
 
 // NewTokenFetcher creates a tokenFetcher that can get an access
@@ -41,7 +41,7 @@ type tokenFetcher struct {
 }
 
 // Returns the cached token, if that has expired or does not exist it returns a new token
-func (a *tokenFetcher) CachedToken(audience string) (string, error) {
+func (a *tokenFetcher) Token(audience string) (string, error) {
 	if a.cachedToken != "" {
 		var p jwt.Parser
 		// Check expiration of token, this does not need to be verified because
@@ -60,7 +60,7 @@ func (a *tokenFetcher) CachedToken(audience string) (string, error) {
 	return a.cachedToken, nil
 }
 
-func (a *tokenFetcher) Token(audience string) (string, error) {
+func (a *tokenFetcher) NewToken(audience string) (string, error) {
 	request := &request{
 		Audience:     audience,
 		ClientID:     a.clientID,
