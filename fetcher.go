@@ -28,6 +28,7 @@ func NewTokenFetcher(httpClient *http.Client, tokenURL, clientID, clientSecret s
 		clientSecret: clientSecret,
 		grantType:    "client_credentials",
 		tokenURL:     tokenURL,
+		cachedTokens: make(map[string]string),
 	}
 }
 
@@ -37,18 +38,18 @@ type tokenFetcher struct {
 	grantType    string
 	tokenURL     string
 	httpClient   *http.Client
-	cachedToken  string
+	cachedTokens map[string]string
 }
 
 // Returns the cached token, if that has expired or does not exist it returns a new token
 func (a *tokenFetcher) Token(audience string) (string, error) {
-	if a.cachedToken != "" {
+	if a.cachedTokens[audience] != "" {
 		var p jwt.Parser
 		// Check expiration of token, this does not need to be verified because
 		// verification occurs on the server.
-		token, _, _ := p.ParseUnverified(a.cachedToken, &jwt.StandardClaims{})
+		token, _, _ := p.ParseUnverified(a.cachedTokens[audience], &jwt.StandardClaims{})
 		if token != nil && token.Claims.Valid() == nil {
-			return a.cachedToken, nil
+			return a.cachedTokens[audience], nil
 		}
 	}
 
@@ -56,8 +57,8 @@ func (a *tokenFetcher) Token(audience string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	a.cachedToken = t
-	return a.cachedToken, nil
+	a.cachedTokens[audience] = t
+	return a.cachedTokens[audience], nil
 }
 
 func (a *tokenFetcher) NewToken(audience string) (string, error) {
